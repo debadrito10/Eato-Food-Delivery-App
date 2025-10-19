@@ -137,3 +137,44 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+# --- Eato additions (Java + CRA + IDE/OS) ---
+
+# Maven / Java
+backend/target/
+target/
+*.iml
+.idea/
+.project
+.classpath
+.settings/
+.factorypath
+hs_err_pid*
+replay_pid*
+
+
+.gradle/
+**/build/
+
+# Frontend build outputs
+frontend/build/
+dist/
+
+# Editors/IDE (general)
+.vscode/
+*.swp
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Env & secrets (keep only examples)
+frontend/.env
+backend/.env
+*.env
+!*.env.example
+backend/application.properties
+!backend/application.properties.example
+
+# Logs (project-wide catch-all; you already have most)
+*.log
+
