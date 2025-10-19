@@ -1,0 +1,8 @@
+db.url=jdbc:postgresql://localhost:5432/foodapp
+db.user=food
+db.pass=foodpwd
+server.port=8080
+cors.origin=http://localhost:3000
+jwt.secret=change-me
+jwt.issuer=eato
+jwt.exp.minutes=120
