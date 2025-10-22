@@ -1,13 +1,23 @@
-import axios from "axios";
+const base = process.env.REACT_APP_API_BASE || "http://localhost:8081";
 
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API || "http://localhost:8081",
-  timeout: 8000,
-});
+export async function searchRestaurants(q = "", page = 0, size = 10, city = "Kolkata") {
+  const params = new URLSearchParams({ q, page, size, city });
+  const res = await fetch(`${base}/api/restaurants?` + params.toString(), {
+    headers: { "Accept": "application/json" }
+  });
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  return res.json(); // {items, total, page, size}
+}
 
-export const health = async () => {
-  const res = await api.get("/health");
-  return res.data; // { status: "ok" }
-};
+export async function getRestaurant(id) {
+  const res = await fetch(`${base}/api/restaurants/${id}`, {
+    headers: { "Accept": "application/json" }
+  });
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  return res.json(); // RestaurantDetailDto
+}
 
-export default api;
+export async function health() {
+  const res = await fetch(`${base}/health`);
+  return res.ok;
+}

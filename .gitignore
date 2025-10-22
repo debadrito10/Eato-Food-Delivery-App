@@ -176,6 +176,9 @@ backend/.env
 !*.env.example
 backend/application.properties
 !backend/application.properties.example
+backend/server/src/main/resources/hibernate.cfg.xml
+!backend/server/src/main/resources/hibernate.cfg.xml.example
+
 
 # Logs (project-wide catch-all; you already have most)
 *.log

@@ -1,0 +1,23 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 5.4//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-5.4.dtd">
+<hibernate-configuration>
+  <session-factory>
+
+    <!-- JDBC connection (replace locally after copying to the real file) -->
+    <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+    <property name="hibernate.connection.url">jdbc:postgresql://localhost:0000/app</property>
+    <property name="hibernate.connection.username">name</property>
+    <property name="hibernate.connection.password">password</property>
+
+    <!-- Dev convenience (schema evolve during dev) -->
+    <property name="hibernate.hbm2ddl.auto">update</property>
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.format_sql">true</property>
+
+    <!-- Entities -->
+    <mapping class="com.eato.server.model.Restaurant"/>
+    <mapping class="com.eato.server.model.Dish"/>
+
+  </session-factory>
+</hibernate-configuration>
