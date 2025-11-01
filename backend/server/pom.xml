@@ -20,6 +20,20 @@
   <version>42.7.4</version>
   <scope>runtime</scope>
 </dependency>
+<!-- BCrypt (password hashing) -->
+<dependency>
+  <groupId>org.mindrot</groupId>
+  <artifactId>jbcrypt</artifactId>
+  <version>0.4</version>
+</dependency>
+
+<!-- JWT (Auth0 library, simple) -->
+<dependency>
+  <groupId>com.auth0</groupId>
+  <artifactId>java-jwt</artifactId>
+  <version>4.4.0</version>
+</dependency>
+
 <dependency>
   <groupId>org.slf4j</groupId>
   <artifactId>slf4j-simple</artifactId>

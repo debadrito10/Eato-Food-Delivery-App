@@ -18,6 +18,9 @@
     <!-- Entities -->
     <mapping class="com.eato.server.model.Restaurant"/>
     <mapping class="com.eato.server.model.Dish"/>
+    <mapping class="com.eato.server.model.User"/>
+    <mapping class="com.eato.server.model.Order"/>
+    <mapping class="com.eato.server.model.OrderItem"/>
 
   </session-factory>
 </hibernate-configuration>

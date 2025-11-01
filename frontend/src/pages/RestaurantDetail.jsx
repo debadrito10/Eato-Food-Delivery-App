@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getRestaurant } from "../api";
+import { useCart } from "../cart/CartContext";
 
 export default function RestaurantDetail() {
   const { id } = useParams();
   const [data, setData] = useState(null);
+  const { addItem } = useCart();   
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
@@ -38,14 +40,25 @@ export default function RestaurantDetail() {
         </a>
       </div>
 
-      <div>
+       <div>
         <div style={{fontWeight:600, marginBottom:8}}>Menu</div>
         {(!data.dishes || data.dishes.length===0) ? <div>No dishes yet</div> : (
           <ul style={{listStyle:"none", padding:0, margin:0, display:"grid", gap:8}}>
             {data.dishes.map(d => (
-              <li key={d.id} style={{border:"1px solid #eee", borderRadius:8, padding:"8px 12px", display:"flex", justifyContent:"space-between"}}>
-                <span>{d.name}</span>
-                <span>₹{d.price}</span>
+              <li key={d.id}
+                  style={{border:"1px solid #eee", borderRadius:8, padding:"8px 12px",
+                          display:"flex", alignItems:"center", justifyContent:"space-between", gap:12}}>
+                <div style={{display:"flex", gap:12}}>
+                  <span>{d.name}</span>
+                  <span style={{color:"#444"}}>₹{d.price}</span>
+                </div>
+                <button
+                  onClick={() => addItem({
+                    dishId: d.id, name: d.name, price: d.price, restaurantId: data.id
+                  })}
+                >
+                  Add to Cart
+                </button>
               </li>
             ))}
           </ul>
