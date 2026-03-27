@@ -20,7 +20,7 @@ public class RestaurantMapper {
     return d;
   }
   private static DishDto dish(Dish x){
-    var d=new DishDto(); d.id=x.getId(); d.name=x.getName(); d.price=x.getprice(); return d;
+    var d=new DishDto(); d.id=x.getId(); d.name=x.getName(); d.price=x.getPrice(); d.stock=x.getStock(); return d;
   }
   public static List<RestaurantListDto> toListDtos(List<Restaurant> rs){
     return rs.stream().map(RestaurantMapper::toListDto).collect(Collectors.toList());

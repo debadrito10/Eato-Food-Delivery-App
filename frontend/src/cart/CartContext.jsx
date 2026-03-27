@@ -10,7 +10,8 @@ export function CartProvider({ children }) {
       const i = prev.findIndex(d => d.dishId === dish.dishId);
       if (i >= 0) {
         const copy = [...prev];
-        copy[i] = { ...copy[i], qty: copy[i].qty + (dish.qty || 1) };
+        const newQty = Math.min(copy[i].qty + (dish.qty || 1), dish.stock || 1);
+        copy[i] = { ...copy[i], qty: newQty };
         return copy;
       }
       return [...prev, { ...dish, qty: dish.qty || 1 }];

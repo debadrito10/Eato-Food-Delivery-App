@@ -5,6 +5,8 @@ import com.eato.server.model.OrderItem;
 import com.eato.server.model.Dish; // you already have this entity
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.LockMode;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,52 +29,68 @@ public class OrderDao {
       if (d == null) throw new IllegalArgumentException("Unknown dishId: " + e.getKey());
       int qty = e.getValue();
       if (qty <= 0) throw new IllegalArgumentException("qty must be > 0");
-      total += qty * d.getprice(); // price is integer rupees
+      total += qty * d.getPrice(); // price is integer rupees
     }
     return total;
   }
 
   /** Creates order + items in a single transaction, returns the persisted order. */
-  public Order create(Session s, long userId, List<OrderItemSpec> items, String addressJson) {
+  
+public Order create(Session s, long userId, List<OrderItemSpec> items, String addressJson) {
     var validated = validateItems(items);
-    Map<Long, Dish> dishById = loadDishes(s, validated.keySet());
 
     Transaction tx = s.beginTransaction();
     try {
-      // compute total from authoritative DB prices
-      int total = 0;
-      for (var e : validated.entrySet()) {
-        Dish d = dishById.get(e.getKey());
-        if (d == null) throw new IllegalArgumentException("Unknown dishId: " + e.getKey());
-        int qty = e.getValue();
-        if (qty <= 0) throw new IllegalArgumentException("qty must be > 0");
-        total += qty * d.getprice();
-      }
+        int total = 0;
+        Map<Long, Dish> lockedDishes = new HashMap<>();
 
-      Order o = new Order();
-      o.setUserId(userId);
-      o.setTotal(total);
-      if (addressJson != null && !addressJson.isBlank()) o.setAddress(addressJson);
-      s.persist(o);
+        // Lock and check stock for each dish
+        for (var e : validated.entrySet()) {
+            Long dishId = e.getKey();
+            int qty = e.getValue();
 
-      // attach items
-      for (var e : validated.entrySet()) {
-        Dish d = dishById.get(e.getKey());
-        OrderItem oi = new OrderItem();
-        oi.setOrder(o);
-        oi.setDishId(d.getId());
-        oi.setQty(e.getValue());
-        oi.setPriceAtOrder(d.getprice());
-        s.persist(oi);
-      }
+            // Lock the dish row for update
+            Dish d = s.createQuery("from Dish d where d.id = :id", Dish.class)
+                    .setParameter("id", dishId)
+                    .setLockMode("d", LockMode.PESSIMISTIC_WRITE)
+                    .uniqueResult();
 
-      tx.commit();
-      return o;
+            if (d == null) throw new IllegalArgumentException("Unknown dishId: " + dishId);
+            if (qty <= 0) throw new IllegalArgumentException("qty must be > 0");
+            if (d.getStock() < qty) throw new IllegalArgumentException("Not enough stock for " + d.getName());
+
+            // Deduct stock
+            d.setStock(d.getStock() - qty);
+      
+            lockedDishes.put(dishId, d);
+
+            total += qty * d.getPrice();
+        }
+
+        Order o = new Order();
+        o.setUserId(userId);
+        o.setTotal(total);
+        if (addressJson != null && !addressJson.isBlank()) o.setAddress(addressJson);
+        s.persist(o);
+
+        // Attach items
+        for (var e : validated.entrySet()) {
+            Dish d = lockedDishes.get(e.getKey());
+            OrderItem oi = new OrderItem();
+            oi.setOrder(o);
+            oi.setDishId(d.getId());
+            oi.setQty(e.getValue());
+            oi.setPriceAtOrder(d.getPrice());
+            s.persist(oi);
+        }
+
+        tx.commit();
+        return o;
     } catch (RuntimeException ex) {
-      if (tx!=null && tx.isActive()) tx.rollback();
-      throw ex;
+        if (tx != null && tx.isActive()) tx.rollback();
+        throw ex;
     }
-  }
+}
 
   /** Paged list of current user's orders (newest first) */
   public Page<Order> findByUser(Session s, long userId, int page, int size){

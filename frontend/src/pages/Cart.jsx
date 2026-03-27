@@ -44,8 +44,20 @@ export default function Cart() {
         <div key={d.dishId} className="cart-row">
           <div>{d.name}</div>
           <div>₹{d.price}</div>
-          <input type="number" min="1" value={d.qty}
-                 onChange={e => setQty(d.dishId, parseInt(e.target.value || "1", 10))}/>
+          <input
+            type="number"
+            min="1"
+            max={d.stock || 1}
+            value={d.qty}
+            onChange={e => {
+              let val = parseInt(e.target.value || "1", 10);
+              if (val > (d.stock || 1)) val = d.stock || 1;
+              setQty(d.dishId, val);
+            }}
+          />
+          {d.stock !== undefined && d.qty >= d.stock && (
+            <span style={{ color: "red", marginLeft: 8 }}>Max stock reached</span>
+          )}
           <button onClick={() => removeItem(d.dishId)}>Remove</button>
         </div>
       ))}
@@ -56,10 +68,10 @@ export default function Cart() {
 
       <div className="address">
         <h4>Address (optional)</h4>
-        <input placeholder="City" value={address.city||""}
-               onChange={e => setAddress(a => ({...a, city: e.target.value}))}/>
-        <input placeholder="Pincode" value={address.pincode||""}
-               onChange={e => setAddress(a => ({...a, pincode: e.target.value}))}/>
+        <input placeholder="City" value={address.city || ""}
+          onChange={e => setAddress(a => ({ ...a, city: e.target.value }))} />
+        <input placeholder="Pincode" value={address.pincode || ""}
+          onChange={e => setAddress(a => ({ ...a, pincode: e.target.value }))} />
       </div>
 
       <div className="actions">

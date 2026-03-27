@@ -52,13 +52,22 @@ export default function RestaurantDetail() {
                   <span>{d.name}</span>
                   <span style={{color:"#444"}}>₹{d.price}</span>
                 </div>
-                <button
-                  onClick={() => addItem({
-                    dishId: d.id, name: d.name, price: d.price, restaurantId: data.id
-                  })}
-                >
-                  Add to Cart
-                </button>
+                <div>
+                  <span style={{marginRight: 12}}>
+                     {d.stock > 0
+                       ? `In stock: ${d.stock}`
+                       : <span style={{ color: 'red' }}>Out of stock</span>
+                    }</span>
+                       
+                       <button
+                         disabled={d.stock === 0}
+                         onClick={() => addItem({
+                          dishId: d.id, name: d.name, price: d.price, restaurantId: data.id, stock: d.stock
+                         })}
+                      >
+                      {d.stock === 0 ? "Out of stock" : "Add to Cart"}
+                   </button>
+                </div>
               </li>
             ))}
           </ul>

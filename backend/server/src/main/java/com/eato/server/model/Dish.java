@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 public class Dish {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  private int stock;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "restaurant_id", nullable = false)
@@ -19,9 +20,18 @@ public class Dish {
   public Dish(Restaurant restaurant, String name, int price) {
     this.restaurant = restaurant; this.name = name; this.price = price;
   }
-
+  
   public Long getId() { return id; }
   public Restaurant getRestaurant() { return restaurant; } public void setRestaurant(Restaurant restaurant) { this.restaurant = restaurant; }
   public String getName() { return name; } public void setName(String name) { this.name = name; }
-  public int getprice() { return price; } public void setprice(int price) { this.price = price; }
+  public int getPrice() { return price; } public void setPrice(int price) { this.price = price; }
+ 
+ public int getStock() {
+    return stock; 
+ }
+
+ public void setStock(int stock) {
+    this.stock = stock; 
 }
+}
+
